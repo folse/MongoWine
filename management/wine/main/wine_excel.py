@@ -27,12 +27,14 @@ def write_log(self, index):
 
 class WineExcel:
 
-	def __init__(self):
+	def __init__(self, category):
 
 		remove_file(log_file_name)
 		self.log_file = file(log_file_name,"w")
 
-		csv_file = file('wine.csv', 'w')
+		file_name = 'product_' + category	+ '.csv'
+		print file_name
+		csv_file = file(file_name, 'w')
 		csv_file.write(codecs.BOM_UTF8)
 		writer = csv.writer(csv_file)
 
@@ -56,7 +58,8 @@ class WineExcel:
 			writer.writerow([store_info])
 			dict_writer.writeheader()
 
-			inventories = db.inventory.find({ "sys_store_id": store_id })
+			inventory_collection = "inventory_" + category
+			inventories = db[inventory_collection].find({ "sys_store_id": store_id })
 			for inventory in inventories:
 				
 				wine_id = inventory['wine_id']
@@ -72,4 +75,4 @@ class WineExcel:
 
 if __name__ == '__main__':
 
-	WineExcel()
+	WineExcel('red_wine')

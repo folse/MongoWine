@@ -45,7 +45,7 @@ def get_day_titles(self):
 
 	return day_titles
 
-def write_store(self, store, wine_category):
+def write_store(self, store, category):
 
 	store_id = str(store['sys_store_id'])
 	store_name = str(store['name'])
@@ -55,7 +55,7 @@ def write_store(self, store, wine_category):
 	self.writer.writerow([store_info])
 	self.dict_writer.writeheader()
 
-	inventory_collection = "inventory_" + wine_category
+	inventory_collection = "inventory_" + category
 
 	inventorys = self.db[inventory_collection].find({ "sys_store_id": store_id })
 	for inventory in inventorys:

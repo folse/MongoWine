@@ -17,7 +17,7 @@
 </div>
 
 <div class="select">
-  <select name="select" id="category_select" class="form-control">
+  <select name="select" id="category_select_inventory" class="form-control">
     <option value="red_wine">Rött vin</option>
     <option value="white_wine">Vitt vin</option>
   </select>
@@ -43,19 +43,9 @@
 </div>
 
 <div class="select">
-  <select name="select" id="month_select" class="form-control">
-    <option value="1">January</option>
-    <option value="2">February</option>
-    <option value="3">March</option>
-    <option value="4">April</option>
-    <option value="5">May</option>
-    <option value="6">June</option>
-    <option value="7">July</option>
-    <option value="8">August</option>
-    <option value="9">September</option>
-    <option value="10">October</option>
-    <option value="11">November</option>
-    <option value="12">December</option>
+  <select name="select" id="category_select_wine" class="form-control">
+    <option value="red_wine">Rött vin</option>
+    <option value="white_wine">Vitt vin</option>
   </select>
 </div>
 
@@ -126,6 +116,7 @@
                 clearInterval(timer);
                 document.getElementById(btnName).innerHTML = "Finished"
                 window.location.href="/download_excel?type="+type+"&category="+category;
+                setTimeout("refreshPage()", 1000);
               }
             }
           },
@@ -139,7 +130,7 @@
     $(function () {
       $("#export_inventory_btn").click(function () {
         if (start_date != "" && end_date != "") {
-          var category = $('#category_select').val()
+          var category = $('#category_select_inventory').val()
           $.ajax({
             type: "post",
             dataType: "json",
@@ -158,7 +149,6 @@
               }else{
                 alert(data.msg);
               }
-              
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
               console.log(XMLHttpRequest.status);
@@ -172,11 +162,11 @@
       });
 
       $("#export_wine_btn").click(function () {
-        var month = $('#month_select').val()
+        var category = $('#category_select_wine').val()
         $.ajax({
           type: "post",
           dataType: "json",
-          url: "export_wine?month="+month,
+          url: "export_wine?category="+category,
           complete: function (resp) {
 
             var data = $.parseJSON(resp.responseText);
@@ -186,7 +176,7 @@
             if (data.code == '0000') {
               document.getElementById("export_wine_btn").innerHTML = "Generating..."
               timer = window.setInterval(function(){ 
-                get_excel_progress("wine", "wine");
+                get_excel_progress("wine", category);
               }, 1000);
             }else{
               alert(data.msg);
@@ -201,6 +191,10 @@
         });
       });
     });
+
+    function refreshPage() {
+      window.location.reload(false); 
+    }
 </script>
 {% endblock %}
 

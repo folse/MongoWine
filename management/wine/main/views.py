@@ -23,8 +23,8 @@ def register_request(app):
 def export_inventory_excel(start_date, end_date, category):
     inventoryExcel = InventoryExcel(start_date, end_date, category)
 
-def export_wine_excel():
-    wineExcel = WineExcel()
+def export_wine_excel(category):
+    wineExcel = WineExcel(category)
 
 @main.route('/', methods=['GET', 'POST'])
 @login_required
@@ -62,10 +62,10 @@ def export_inventory():
 def export_wine():
     if request.method == 'POST':
 
-        month = request.args.get('month', '')
+        category = request.args.get('category', '')
 
         threads = []
-        thread = threading.Thread(target=export_wine_excel,args=())
+        thread = threading.Thread(target=export_wine_excel,args=(category,))
         threads.append(thread)
         for t in threads:
             t.setDaemon(True)
@@ -102,12 +102,15 @@ def download_excel():
     category = request.args.get('category', '')
 
     if type == 'wine':
-        file_name = 'wine.csv'
+        file_name = 'product_'
     else:
-        file_name = 'inventory_' + category + '.csv'
+        file_name = 'inventory_'
 
+    file_name = file_name + category + '.csv'
     file_path = os.getcwd() + '/' + file_name
-    print os.getcwd()
+
+    print file_path
+
     response = make_response(send_file(file_path))
     response.headers["Content-Disposition"] = "attachment; filename=%s;" % file_name
     return response
