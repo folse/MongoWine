@@ -50,7 +50,7 @@ def save_wine_info(product, sys_store_id):
     	wine_name = wine_name + ' ' + str(product['ProductNameThin']).encode("utf-8")
 
     wine_number = product['ProductNumber']
-    wine_inventory = product['QuantityText'][:-3]
+    wine_inventory = int(product['QuantityText'][:-3])
     wine_url = product['ProductUrl']
     wine_id = 0
 
