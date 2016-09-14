@@ -92,21 +92,9 @@ def save_wine_info(product, sys_store_id):
 def get_update_time_period():
 
 	current_day_string = datetime.datetime.now().strftime('%Y-%m-%d')
-	current_hour_string = datetime.datetime.now().strftime('%H')
+	current_hour_string = datetime.datetime.now().strftime('%H:%M')
 
-	if current_hour_string[0] == '0':
-		current_hour_string = current_hour_string[1]
-
-	current_hour = int(current_hour_string)
-
-	if current_hour == 10 or current_hour == 11:
-		return current_day_string + '-1'
-	elif current_hour == 14 or current_hour == 15:
-		return current_day_string + '-2'
-	elif current_hour == 22 or current_hour == 23:
-		return current_day_string + '-3'
-
-	return current_day_string
+	return current_day_string + " " +  current_hour_string
 
 if __name__ == '__main__':
 	#  785 1288

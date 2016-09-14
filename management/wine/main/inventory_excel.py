@@ -17,7 +17,7 @@ def remove_file(file_name):
 		os.remove(file_name)
 
 def write_log(self, index):
-	self.log_file = file(log_file_name,"w")
+	self.log_file = file(log_file_name,"w+")
 	completion_rate = str((index+1)*100/436) + "%"
 	self.log_file.writelines(completion_rate)
 
