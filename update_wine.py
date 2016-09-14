@@ -116,5 +116,4 @@ if __name__ == '__main__':
 
 	wines = db.wine.find({ "alcohol": "" })
 	for wine in wines:
-		print wine['number']
 		get_wine_info(wine)

@@ -74,14 +74,6 @@ def save_wine_info(product, sys_store_id):
     else:
         wine_id = result['_id']
 
-    # inventory_collection = 'inventory_' + str(sys_store_id)
-
-    # new_inventory = { "wine_id": wine_id, "wine_name": wine_name, "wine_number": wine_number, "sys_store_id": sys_store_id, "inventory": wine_inventory, "day_period": update_time_period, "created_at": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-    # db.inventory.insert(new_inventory)
-
-    # new_inventory.pop('sys_store_id', None)
-    # db[inventory_collection].insert(new_inventory)
-
     db.inventory.update({ "wine_id": wine_id, "sys_store_id": sys_store_id },\
 	 			   { "$set": { "wine_name": wine_name, \
 	 						   "wine_number": wine_number, \
@@ -107,5 +99,10 @@ if __name__ == '__main__':
 	db = MongoClient().wine
 	update_time_period = get_update_time_period()
 
+	sys_wine_ids = []
+
 	for store in db.store.find():
-		get_store_wine(wine_subcategory, store['sys_store_id'], 0)
+		sys_wine_ids.append(store['sys_store_id'])
+
+	for sys_wine_id in sys_wine_ids:
+		get_store_wine(wine_subcategory, sys_wine_id, 0)
