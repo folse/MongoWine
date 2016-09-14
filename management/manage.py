@@ -10,8 +10,9 @@ manager.add_command("run", Server(host="0.0.0.0", port=80, use_debugger=True))
 
 @manager.option('-u', '--name', dest='username', default='admin')
 @manager.option('-p', '--password', dest='password', default='123456')
-def create_admin(username, password):
-    admin = User(email='asd', username=username, password=generate_password_hash(password), is_active=True)
+@manager.option('-e', '--email', dest='email', default='default@abc.com')
+def create_admin(username, password, email):
+    admin = User(username=username, password=generate_password_hash(password), email=email)
     admin.save()
 
 if __name__ == '__main__':
