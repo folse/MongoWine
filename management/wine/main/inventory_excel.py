@@ -10,7 +10,6 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-inventory_file_name = 'inventory.xlsx'
 log_file_name = 'inventory.log'
 
 def remove_file(file_name):
@@ -18,7 +17,7 @@ def remove_file(file_name):
 		os.remove(file_name)
 
 def write_log(self, index):
-	self.log_file = file(log_file_name,"w+")
+	self.log_file = file(log_file_name,"w")
 	completion_rate = str((index+1)*100/436) + "%"
 	self.log_file.writelines(completion_rate)
 
@@ -64,9 +63,10 @@ class WineExcel:
 
 	def __init__(self, start_date, end_date):
 
-		self.db = MongoClient().wine
-
 		remove_file(log_file_name)
+
+		self.db = MongoClient().wine
+		self.log_file = file(log_file_name,"w")
 
 		self.start_day = datetime.datetime.strptime(start_date,'%Y-%m-%d')
 		self.end_day = datetime.datetime.strptime(end_date,'%Y-%m-%d')

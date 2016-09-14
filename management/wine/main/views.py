@@ -46,8 +46,8 @@ def export_excel():
         end_day = datetime.datetime.strptime(end_date,'%Y-%m-%d')
         days_count = (end_day-start_day).days
 
-        if days_count > 15:
-            data = { "msg":"Please don't select more than 15 days", "code":"0001" }
+        if days_count > 31:
+            data = { "msg":"Please don't select more than 31 days", "code":"0001" }
         else:
             threads = []
             thread = threading.Thread(target=export_inventory_excel,args=(start_date,end_date))
