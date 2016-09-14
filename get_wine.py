@@ -13,9 +13,9 @@ reload(sys)
 sys.setdefaultencoding('utf8')   
 sys.setrecursionlimit(1000000)
 
-def get_store_wine(wine_subcategory,sys_store_id,page):
+def get_store_wine(wine_subcategory, sys_store_id, page):
 
-	request_data = urllib.urlencode({'subcategory':wine_subcategory,'sortdirection':'Ascending','site':sys_store_id,'fullassortment':'0','page':page}) 
+	request_data = urllib.urlencode({'subcategory':wine_subcategory_dict[wine_subcategory],'sortdirection':'Ascending','site':sys_store_id,'fullassortment':'0','page':page}) 
 
 	request_url = 'http://www.systembolaget.se/api/productsearch/search?' + request_data.replace('+','%20')
 
@@ -35,14 +35,14 @@ def get_store_wine(wine_subcategory,sys_store_id,page):
 	i = 0
 	while (i < len(product_array)):
 		product = product_array[i]
-		save_wine_info(product, sys_store_id)
+		save_wine_info(product, sys_store_id, wine_subcategory)
 		i = i + 1
 
 	next_page = meta_data['NextPage']
 	if next_page > 0:
 		get_store_wine(wine_subcategory,sys_store_id,next_page)
 
-def save_wine_info(product, sys_store_id):
+def save_wine_info(product, sys_store_id, wine_subcategory):
     sys_wine_id = product['ProductId']
     wine_name = str(product['ProductNameBold']).encode("utf-8")
 
@@ -68,13 +68,16 @@ def save_wine_info(product, sys_store_id):
 					 "sugar": "", \
 					 "producer": "", \
 					 "supplier": "", \
+					 "category": wine_subcategory, \
 					 "updated_at": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') }
     	wine_id = db.wine.insert(new_wine)
         print 'Inserted a new wine: ' + str(wine_id)
     else:
         wine_id = result['_id']
 
-    db.inventory.update({ "wine_id": wine_id, "sys_store_id": sys_store_id },\
+    inventory_collection = "inventory_" + wine_subcategory
+
+    db[inventory_collection].update({ "wine_id": wine_id, "sys_store_id": sys_store_id },\
 	 			   { "$set": { "wine_name": wine_name, \
 	 						   "wine_number": wine_number, \
 	 						   update_time_period: wine_inventory, \
@@ -89,20 +92,20 @@ def get_update_time_period():
 	return current_day_string + " " +  current_hour_string + ':00'
 
 if __name__ == '__main__':
-	#  785 1288
-	wine_subcategory = u'Rött vin'
-	# wine_subcategory = u'Vitt vin'
 
 	global db
 	global update_time_period
+	global wine_subcategory_dict
 
 	db = MongoClient().wine
 	update_time_period = get_update_time_period()
+	wine_subcategory_dict = { "red_wine": u'Rött vin', "white_wine": u'Vitt vin' }
 
-	sys_wine_ids = []
+	sys_store_ids = []
 
 	for store in db.store.find():
-		sys_wine_ids.append(store['sys_store_id'])
+		sys_store_ids.append(store['sys_store_id'])
 
-	for sys_wine_id in sys_wine_ids:
-		get_store_wine(wine_subcategory, sys_wine_id, 0)
+	for sys_store_id in sys_store_ids:
+		for wine_subcategory in wine_subcategory_dict.keys():
+			get_store_wine(wine_subcategory, sys_store_id, 0)
