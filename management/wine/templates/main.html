@@ -13,13 +13,13 @@
 {% block page_content %}
 
 <div class="header clearfix">
-    <h3 class="text-muted">Export Data</h3>
+    <h3 class="text-muted">Export Inventory Data</h3>
 </div>
 
 <div class="select">
   <select name="select" id="category_select" class="form-control">
-    <option value="1">Rött vin</option>
-    <option value="2">Vitt vin</option>
+    <option value="red_wine">Rött vin</option>
+    <option value="white_wine">Vitt vin</option>
   </select>
 </div>
 
@@ -34,7 +34,32 @@
   <div id="end_calendar"></div>
 </div>
 
-<a id="export_btn" class="btn btn-export" type="button">Export</a>
+<a id="export_inventory_btn" class="btn btn-success" type="button">Export</a>
+
+<p>&nbsp;</p>
+
+<div class="header clearfix">
+    <h3 class="text-muted">Export Product Data</h3>
+</div>
+
+<div class="select">
+  <select name="select" id="month_select" class="form-control">
+    <option value="1">January</option>
+    <option value="2">February</option>
+    <option value="3">March</option>
+    <option value="4">April</option>
+    <option value="5">May</option>
+    <option value="6">June</option>
+    <option value="7">July</option>
+    <option value="8">August</option>
+    <option value="9">September</option>
+    <option value="10">October</option>
+    <option value="11">November</option>
+    <option value="12">December</option>
+  </select>
+</div>
+
+<a id="export_wine_btn" class="btn btn-success" type="button">Export</a>
 
 <script src="{{ url_for('static', filename='js/jquery.js') }}"></script> 
 <script src="{{ url_for('static', filename='js/calendar.js') }}"></script>
@@ -82,7 +107,7 @@
 
     var alreadyDownload = false
 
-    function get_excel_progress(type) {
+    function get_excel_progress(type, category) {
       $.ajax({
           type: "get",
           dataType: "json",
@@ -91,15 +116,16 @@
             var data = $.parseJSON(resp.responseText);
             console.log(data.msg);
             if (data.msg != "") {
-              document.getElementById("export_btn").innerHTML = data.msg
+              btnName = "export_" + type + "_btn" 
+              document.getElementById(btnName).innerHTML = data.msg
               if (data.msg == "99%") {
-                document.getElementById("export_btn").innerHTML = "Generating..."
+                document.getElementById(btnName).innerHTML = "Generating..."
               }
               if (data.msg == "100%" && !alreadyDownload) {
                 alreadyDownload = true
                 clearInterval(timer);
-                document.getElementById("export_btn").innerHTML = "Finished"
-                window.location.href="/download_excel?type="+type;
+                document.getElementById(btnName).innerHTML = "Finished"
+                window.location.href="/download_excel?type="+type+"&category="+category;
               }
             }
           },
@@ -111,13 +137,13 @@
       });
     }
     $(function () {
-      $("#export_btn").click(function () {
+      $("#export_inventory_btn").click(function () {
         if (start_date != "" && end_date != "") {
           var category = $('#category_select').val()
           $.ajax({
             type: "post",
             dataType: "json",
-            url: "export_excel?start_date="+start_date+"&end_date="+end_date+"&category="+category,
+            url: "export_inventory?start_date="+start_date+"&end_date="+end_date+"&category="+category,
             complete: function (resp) {
 
               var data = $.parseJSON(resp.responseText);
@@ -125,9 +151,9 @@
               console.log(data.msg);
 
               if (data.code == '0000') {
-                document.getElementById("export_btn").innerHTML = "Generating..."
+                document.getElementById("export_inventory_btn").innerHTML = "Generating..."
                 timer = window.setInterval(function(){ 
-                  get_excel_progress("inventory");
+                  get_excel_progress("inventory", category);
                 }, 1000);
               }else{
                 alert(data.msg);
@@ -143,6 +169,36 @@
         }else{
           alert("Please select the date");
         }
+      });
+
+      $("#export_wine_btn").click(function () {
+        var month = $('#month_select').val()
+        $.ajax({
+          type: "post",
+          dataType: "json",
+          url: "export_wine?month="+month,
+          complete: function (resp) {
+
+            var data = $.parseJSON(resp.responseText);
+            console.log(data.code);
+            console.log(data.msg);
+
+            if (data.code == '0000') {
+              document.getElementById("export_wine_btn").innerHTML = "Generating..."
+              timer = window.setInterval(function(){ 
+                get_excel_progress("wine", "wine");
+              }, 1000);
+            }else{
+              alert(data.msg);
+            }
+            
+          },
+          error: function(XMLHttpRequest, textStatus, errorThrown) {
+            console.log(XMLHttpRequest.status);
+            console.log(XMLHttpRequest.readyState);
+            console.log(textStatus);
+          }
+        });
       });
     });
 </script>

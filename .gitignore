@@ -1,7 +1,5 @@
 .DS_Store
 *.pyc
 venv
-wine.csv
-wine.log
-inventory.csv
-inventory.log
+*.csv
+*.log

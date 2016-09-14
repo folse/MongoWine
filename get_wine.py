@@ -13,13 +13,13 @@ reload(sys)
 sys.setdefaultencoding('utf8')   
 sys.setrecursionlimit(1000000)
 
-def get_store_wine(wine_subcategory, sys_store_id, page):
+def get_store_wine(wine_category, sys_store_id, page):
 
-	request_data = urllib.urlencode({'subcategory':wine_subcategory_dict[wine_subcategory],'sortdirection':'Ascending','site':sys_store_id,'fullassortment':'0','page':page}) 
+	request_data = urllib.urlencode({'subcategory':wine_category_dict[wine_category],'sortdirection':'Ascending','site':sys_store_id,'fullassortment':'0','page':page}) 
 
 	request_url = 'http://www.systembolaget.se/api/productsearch/search?' + request_data.replace('+','%20')
 
-	print 'store: ' + str(sys_store_id) + ', page:' + str(page)
+	print 'store: ' + str(sys_store_id) + ', page:' + str(page) + ', category: ' + wine_category
 
 	try:
 		resp = urllib2.urlopen(request_url).read()
@@ -35,14 +35,14 @@ def get_store_wine(wine_subcategory, sys_store_id, page):
 	i = 0
 	while (i < len(product_array)):
 		product = product_array[i]
-		save_wine_info(product, sys_store_id, wine_subcategory)
+		save_wine_info(product, sys_store_id, wine_category)
 		i = i + 1
 
 	next_page = meta_data['NextPage']
 	if next_page > 0:
-		get_store_wine(wine_subcategory,sys_store_id,next_page)
+		get_store_wine(wine_category,sys_store_id,next_page)
 
-def save_wine_info(product, sys_store_id, wine_subcategory):
+def save_wine_info(product, sys_store_id, wine_category):
     sys_wine_id = product['ProductId']
     wine_name = str(product['ProductNameBold']).encode("utf-8")
 
@@ -68,14 +68,14 @@ def save_wine_info(product, sys_store_id, wine_subcategory):
 					 "sugar": "", \
 					 "producer": "", \
 					 "supplier": "", \
-					 "category": wine_subcategory, \
+					 "category": wine_category, \
 					 "updated_at": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') }
     	wine_id = db.wine.insert(new_wine)
         print 'Inserted a new wine: ' + str(wine_id)
     else:
         wine_id = result['_id']
 
-    inventory_collection = "inventory_" + wine_subcategory
+    inventory_collection = "inventory_" + wine_category
 
     db[inventory_collection].update({ "wine_id": wine_id, "sys_store_id": sys_store_id },\
 	 			   { "$set": { "wine_name": wine_name, \
@@ -95,11 +95,11 @@ if __name__ == '__main__':
 
 	global db
 	global update_time_period
-	global wine_subcategory_dict
+	global wine_category_dict
 
 	db = MongoClient().wine
 	update_time_period = get_update_time_period()
-	wine_subcategory_dict = { "red_wine": u'Rött vin', "white_wine": u'Vitt vin' }
+	wine_category_dict = { "red_wine": u'Rött vin', "white_wine": u'Vitt vin' }
 
 	sys_store_ids = []
 
@@ -107,5 +107,5 @@ if __name__ == '__main__':
 		sys_store_ids.append(store['sys_store_id'])
 
 	for sys_store_id in sys_store_ids:
-		for wine_subcategory in wine_subcategory_dict.keys():
-			get_store_wine(wine_subcategory, sys_store_id, 0)
+		for wine_category in wine_category_dict.keys():
+			get_store_wine(wine_category, sys_store_id, 0)

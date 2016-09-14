@@ -79,13 +79,12 @@ div.flask-pagedown-preview h3 {
     font-size: 120%;
 }
 
-.btn-export {
+.btn-success {
     width: 130px;
     margin-top: 10px;
     margin-bottom: 30px;
     font-size: 1.2em;
-    color: #fff;
-    background-color: #66be8c;
+    border-color: transparent;
 }
 
 .table > tbody > tr > td, 

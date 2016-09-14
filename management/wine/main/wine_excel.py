@@ -14,29 +14,37 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-if __name__ == '__main__':
+log_file_name = 'wine.log'
 
-	start_date = '2016-08-28'
-	end_date = '2016-09-01'
+def remove_file(file_name):
+	if os.path.isfile(file_name): 
+		os.remove(file_name)
 
-	sql_start_time = datetime.datetime.strptime(start_date,'%Y-%m-%d') + datetime.timedelta(days=-1)
-	sql_end_time = datetime.datetime.strptime(end_date,'%Y-%m-%d') + datetime.timedelta(days=1)
-	sql_start_date = sql_start_time.strftime('%Y-%m-%d')
-	sql_end_date = sql_end_time.strftime('%Y-%m-%d')
+def write_log(self, index):
+	self.log_file = file(log_file_name,"w+")
+	completion_rate = str((index+1)*100/436) + "%"
+	self.log_file.writelines(completion_rate)
 
-	csv_file = file('product_list.csv', 'w')
-	csv_file.write(codecs.BOM_UTF8)
-	writer = csv.writer(csv_file)
+class WineExcel:
 
-	field_names = ['Product Name', 'Product Id', 'Säljstart', 'Alkoholhalt', 'Färg', 'Doft', 'Råvaror', 'Sockerhalt', 'Producent', 'Leverantör']
-	dict_writer = csv.DictWriter(csv_file, fieldnames=field_names)
+	def __init__(self):
 
-	global db
-	db = MongoClient().wine
+		remove_file(log_file_name)
+		self.log_file = file(log_file_name,"w")
 
-	for store in db.store.find():
+		csv_file = file('wine.csv', 'w')
+		csv_file.write(codecs.BOM_UTF8)
+		writer = csv.writer(csv_file)
 
-		if store != None:
+		field_names = ['Product Name', 'Product Id', 'Säljstart', 'Alkoholhalt', 'Färg', 'Doft', 'Råvaror', 'Sockerhalt', 'Producent', 'Leverantör']
+		dict_writer = csv.DictWriter(csv_file, fieldnames=field_names)
+
+		db = MongoClient().wine
+
+		store_array = db.store.find()
+		for i in xrange(0,store_array.count()):
+
+			store = store_array[i]
 
 			store_id = store['sys_store_id']
 			store_name = store['name']
@@ -58,4 +66,10 @@ if __name__ == '__main__':
 			writer.writerow([' '])
 			writer.writerow([' '])
 
+			write_log(self,i)
 
+		self.log_file.close()
+
+if __name__ == '__main__':
+
+	WineExcel()

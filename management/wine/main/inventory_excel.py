@@ -45,7 +45,7 @@ def get_day_titles(self):
 
 	return day_titles
 
-def write_store(self, store):
+def write_store(self, store, wine_category):
 
 	store_id = str(store['sys_store_id'])
 	store_name = str(store['name'])
@@ -55,13 +55,15 @@ def write_store(self, store):
 	self.writer.writerow([store_info])
 	self.dict_writer.writeheader()
 
-	inventorys = self.db.inventory.find({ "sys_store_id": store_id })
+	inventory_collection = "inventory_" + wine_category
+
+	inventorys = self.db[inventory_collection].find({ "sys_store_id": store_id })
 	for inventory in inventorys:
 		self.dict_writer.writerow(inventory)
 
-class WineExcel:
+class InventoryExcel:
 
-	def __init__(self, start_date, end_date):
+	def __init__(self, start_date, end_date, category):
 
 		remove_file(log_file_name)
 
@@ -75,17 +77,16 @@ class WineExcel:
 		field_names = ['wine_name', 'wine_number']
 		field_names.extend(get_day_titles(self))
 
-		csv_file = file('inventory.csv', 'w')
+		file_name = 'inventory_' + category	+ '.csv'	
+		csv_file = file(file_name, 'w')
 		csv_file.write(codecs.BOM_UTF8)
 		self.writer = csv.writer(csv_file)
 		self.dict_writer = csv.DictWriter(csv_file, fieldnames=field_names, extrasaction='ignore')
 
-	def export_inventory(self):
-
 		store_array = self.db.store.find()
 		for i in xrange(0,store_array.count()):
 			store = store_array[i]
-			write_store(self, store)
+			write_store(self, store, category)
 			write_log(self,i)
 
 		self.log_file.close()
@@ -93,6 +94,4 @@ class WineExcel:
 
 if __name__ == '__main__':
 
-	wineExcel = WineExcel('2016-09-08','2016-09-15')
-	wineExcel.export_inventory()
-
+	InventoryExcel('2016-09-08','2016-09-15', 'red_wine')
