@@ -34,7 +34,7 @@ def get_wine_info(wine):
 		parse_wine_info(resp,wine)
 	except Exception, e:
 		print e
-		time.sleep(300)
+		time.sleep(60)
 		resp = urllib2.urlopen(req).read()
 		parse_wine_info(resp,wine)
 
@@ -116,4 +116,5 @@ if __name__ == '__main__':
 
 	wines = db.wine.find({ "alcohol": "" })
 	for wine in wines:
+		print wine['number']
 		get_wine_info(wine)
