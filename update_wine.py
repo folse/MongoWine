@@ -20,8 +20,8 @@ sys.setrecursionlimit(1000000)
 #得到全部的 wine_number 列表。然后将每个相同 wine_number 的 inventory 中的 wine 信息更新即可。
 
 
-def get_wine_info(wine):
-	url = 'https://api.systembolaget.se/V4/artikel/' + wine['number']
+def get_wine_info(wine_number, category):
+	url = 'https://api.systembolaget.se/V4/artikel/' + wine_number
 	username = 'DMZ1\SybApi'
 	password = 'zc3R21Q8nJ4y8Pj1A6uB'
 	send_headers = {
@@ -39,7 +39,7 @@ def get_wine_info(wine):
 
 	try:
 		resp = urllib2.urlopen(req).read()
-		parse_wine_info(resp,wine)
+		parse_wine_info(resp, wine_number, category)
 	except urllib2.HTTPError, e:
 		print e
 		pass
@@ -47,9 +47,9 @@ def get_wine_info(wine):
 		print e
 		time.sleep(2)
 		resp = urllib2.urlopen(req).read()
-		parse_wine_info(resp,wine)
+		parse_wine_info(resp, wine_number, category)
 
-def parse_wine_info(resp,wine):
+def parse_wine_info(resp, wine_number, category):
 
 	data = json.loads(resp)
 
@@ -70,7 +70,7 @@ def parse_wine_info(resp,wine):
     	if data.has_key('Artiklar'):
 			for i in range(len(data['Artiklar'])):
 				wine_detail_number = data['Artiklar'][i]['ArtikelNr']
-				if wine_detail_number == wine['number']:
+				if wine_detail_number == wine_number:
 					wine_info = data['Artiklar'][i]
 
 			if wine_info.has_key('Saljstartsdatum'):
@@ -97,7 +97,9 @@ def parse_wine_info(resp,wine):
 			if wine_info.has_key('Leverantor'):
 				supplier = wine_info['Leverantor']
 
-			db.wine.update({ "_id": wine['_id'] },\
+			inventory_collection = "inventory_" + wine_category
+
+			db[inventory_collection].update({ "wine_number": wine_number },\
 			 			   { "$set": { "sales_start": sales_start, \
 			 	            		   "alcohol": alcohol, \
 			 						   "color": color, \
@@ -106,7 +108,6 @@ def parse_wine_info(resp,wine):
 			 						   "sugar": sugar, \
 			 						   "producer": producer, \
 			 						   "supplier": supplier, \
-			 						   "updated_at": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), \
 			 						  }}, False, False)
 
 def get_date_from_timestamp(time_stamp_info):
@@ -125,7 +126,23 @@ if __name__ == '__main__':
 	global db
 	db = MongoClient().wine
 
-	wines = db.wine.find({ "alcohol": "" })
-	for wine in wines:
-		print wine['number']
-		get_wine_info(wine)
+	wine_category_dict = { "red_wine": u'Rött vin', "white_wine": u'Vitt vin' }
+
+	for wine_category in wine_category_dict.keys():
+
+		inventory_collection = "inventory_" + wine_category
+
+		wine_numbers = []
+		for wine_number in db[inventory_collection].distinct('wine_number'):
+			wine_numbers.append(wine_number)
+
+		for wine_number in wine_numbers:
+			inventory = db[inventory_collection].find_one({ "wine_number": wine_number, "alcohol": {"$exists": False} })
+			if inventory != None:
+				print inventory['wine_number']
+				get_wine_info(inventory['wine_number'], wine_category)
+
+	print datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+
+

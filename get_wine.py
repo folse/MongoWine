@@ -37,7 +37,6 @@ def get_store_wine(wine_category, sys_store_id, page):
 
 	i = 0
 	while (i < len(product_array)):
-		print i + 1
 		product = product_array[i]
 		save_wine_info(product, sys_store_id, wine_category)
 		i = i + 1
@@ -82,3 +81,5 @@ if __name__ == '__main__':
 	for sys_store_id in sys_store_ids:
 		for wine_category in wine_category_dict.keys():
 			get_store_wine(wine_category, sys_store_id, 0)
+
+	print datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
