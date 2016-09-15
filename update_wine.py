@@ -32,11 +32,14 @@ def get_wine_info(wine):
 	try:
 		resp = urllib2.urlopen(req).read()
 		parse_wine_info(resp,wine)
-	except Exception, e:
+	except HTTPError, e:
 		print e
-		time.sleep(10)
-		resp = urllib2.urlopen(req).read()
-		parse_wine_info(resp,wine)
+		if e.getcode() == 500:
+			pass
+		else:
+			time.sleep(10)
+			resp = urllib2.urlopen(req).read()
+			parse_wine_info(resp,wine)
 
 def parse_wine_info(resp,wine):
 
