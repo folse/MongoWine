@@ -12,6 +12,14 @@ reload(sys)
 sys.setdefaultencoding('utf8')   
 sys.setrecursionlimit(1000000)
 
+#新版 update_wine 思路：
+
+#首先，现在不再有 wine 表了。
+
+#然后在各个 category 的 inventory 表中根据 wine_number 去重后，
+#得到全部的 wine_number 列表。然后将每个相同 wine_number 的 inventory 中的 wine 信息更新即可。
+
+
 def get_wine_info(wine):
 	url = 'https://api.systembolaget.se/V4/artikel/' + wine['number']
 	username = 'DMZ1\SybApi'

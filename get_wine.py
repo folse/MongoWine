@@ -37,6 +37,7 @@ def get_store_wine(wine_category, sys_store_id, page):
 
 	i = 0
 	while (i < len(product_array)):
+		print i + 1
 		product = product_array[i]
 		save_wine_info(product, sys_store_id, wine_category)
 		i = i + 1
@@ -46,46 +47,14 @@ def get_store_wine(wine_category, sys_store_id, page):
 		get_store_wine(wine_category,sys_store_id,next_page)
 
 def save_wine_info(product, sys_store_id, wine_category):
-    sys_wine_id = product['ProductId']
-    wine_name = str(product['ProductNameBold']).encode("utf-8")
-
-    if product['ProductNameThin'] != None:
-    	wine_name = wine_name + ' ' + str(product['ProductNameThin']).encode("utf-8")
-
+    
     wine_number = product['ProductNumber']
     wine_inventory = int(product['QuantityText'][:-3])
-    wine_url = product['ProductUrl']
-    wine_id = 0
-
-    result = db.wine.find_one({"sys_wine_id": sys_wine_id})
-    if result == None:
-    	new_wine = { "sys_wine_id": sys_wine_id, \
-    				 "name": wine_name, \
-    				 "number": wine_number, \
-    				 "url": wine_url, \
-    				 "sales_start": "", \
-	        		 "alcohol": "", \
-					 "color": "", \
-					 "fragrance": "", \
-					 "ingredient": "", \
-					 "sugar": "", \
-					 "producer": "", \
-					 "supplier": "", \
-					 "category": wine_category, \
-					 "updated_at": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') }
-    	wine_id = db.wine.insert(new_wine)
-        print 'Inserted a new wine: ' + str(wine_id)
-    else:
-        wine_id = result['_id']
 
     inventory_collection = "inventory_" + wine_category
 
-    db[inventory_collection].update({ "wine_id": wine_id, "sys_store_id": sys_store_id },\
-	 			   { "$set": { "wine_name": wine_name, \
-	 						   "wine_number": wine_number, \
-	 						   update_time_period: wine_inventory, \
-	 						   "updated_at": datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), \
-	 						  }}, True, True)
+    db[inventory_collection].update({ "wine_number": wine_number, "sys_store_id": sys_store_id },\
+	 			   { "$set": { update_time_period: wine_inventory }}, True, True)
 
 def get_update_time_period():
 

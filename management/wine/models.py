@@ -111,10 +111,8 @@ class Wine(db.Document):
     sugar = StringField(max_length=256)
     producer = StringField(max_length=256)
     supplier = StringField(max_length=256)
-    url = StringField(max_length=256)
     number = StringField(max_length=64)
     category = StringField(max_length=64)
-    sys_wine_id = StringField(max_length=64)
     created_at = DateTimeField(default=datetime.utcnow)
     updated_at = DateTimeField(default=datetime.utcnow)
 
