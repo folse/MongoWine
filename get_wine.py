@@ -25,7 +25,7 @@ def get_store_wine(wine_category, sys_store_id, page):
 		resp = urllib2.urlopen(request_url).read()
 	except Exception, e:
 		print e
-		time.sleep(10)
+		time.sleep(2)
 		resp = urllib2.urlopen(request_url).read()
 	  
 	resp_json = json.loads(resp)
