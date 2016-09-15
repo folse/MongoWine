@@ -36,8 +36,9 @@ def get_wine_info(wine):
 		print e
     	if e.errno == errno.ECONNRESET:
     		time.sleep(10)
-			resp = urllib2.urlopen(req).read()
-			parse_wine_info(resp,wine)
+    		resp = urllib2.urlopen(req).read()
+    		parse_wine_info(resp,wine)
+    		
 	except Exception, e:
 		print e
 		if e.getcode() == 500:
