@@ -32,14 +32,14 @@ def get_wine_info(wine):
 	try:
 		resp = urllib2.urlopen(req).read()
 		parse_wine_info(resp,wine)
-	except SocketError as e:
+	except urllib2.HTTPError, e:
 		print e
-    	if e.errno == errno.ECONNRESET:
-    		time.sleep(10)
-    		resp = urllib2.urlopen(req).read()
-    		parse_wine_info(resp,wine)
-    	else:
-    		pass
+		pass
+	except urllib2.socket.error, e:
+		print e
+		time.sleep(2)
+		resp = urllib2.urlopen(req).read()
+		parse_wine_info(resp,wine)
 
 def parse_wine_info(resp,wine):
 
