@@ -23,7 +23,10 @@ def get_store_wine(wine_category, sys_store_id, page):
 
 	try:
 		resp = urllib2.urlopen(request_url).read()
-	except Exception, e:
+	except urllib2.HTTPError, e:
+		print e
+		time.sleep(2)
+	except urllib2.socket.error, e:
 		print e
 		time.sleep(2)
 		resp = urllib2.urlopen(request_url).read()
