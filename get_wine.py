@@ -97,6 +97,7 @@ def get_update_time_period():
 if __name__ == '__main__':
 
 	global db
+	global resp
 	global update_time_period
 	global wine_category_dict
 
