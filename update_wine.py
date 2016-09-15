@@ -34,7 +34,7 @@ def get_wine_info(wine):
 		parse_wine_info(resp,wine)
 	except Exception, e:
 		print e
-		time.sleep(60)
+		time.sleep(10)
 		resp = urllib2.urlopen(req).read()
 		parse_wine_info(resp,wine)
 
