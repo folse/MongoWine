@@ -153,7 +153,7 @@ def parse_wine_info(resp, wine_number, category):
 														"sugar": sugar, \
 														"producer": producer, \
 														"supplier": supplier, \
-														}}, False, False)
+														}}, False, True)
 
 def get_date_from_timestamp(time_stamp_info):
 	
@@ -180,7 +180,6 @@ def update_wine():
 		for wine_number in wine_numbers:
 			inventory = db[inventory_collection].find_one({ "wine_number": wine_number, "alcohol": {"$exists": False} })
 			if inventory != None:
-				print inventory['wine_number']
 				get_wine_info(inventory['wine_number'], wine_category)
 
 if __name__ == '__main__':
