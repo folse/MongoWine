@@ -60,6 +60,8 @@ def write_store(self, store, category):
 	for inventory in self.db[inventory_collection].find({ "sys_store_id": store_id }):
 		self.dict_writer.writerow(inventory)
 
+	self.writer.writerow([' '])
+
 class InventoryExcel:
 
 	def __init__(self, start_date, end_date, category):

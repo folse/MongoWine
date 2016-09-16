@@ -107,7 +107,6 @@ class WineExcel:
 									'Leverantör': supplier })
 
 			writer.writerow([' '])
-			writer.writerow([' '])
 
 			write_log(self,i)
 
