@@ -68,8 +68,8 @@ class WineExcel:
 			supplier = ''
 
 			inventory_collection = "inventory_" + category
-			inventories = db[inventory_collection].find({ "sys_store_id": store_id })
-			for inventory in inventories:
+			
+			for inventory in db[inventory_collection].find({ "sys_store_id": store_id }):
 
 				if inventory.has_key('sales_start'):
 					sales_start = inventory['sales_start']

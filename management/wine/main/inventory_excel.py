@@ -57,8 +57,7 @@ def write_store(self, store, category):
 
 	inventory_collection = "inventory_" + category
 
-	inventorys = self.db[inventory_collection].find({ "sys_store_id": store_id })
-	for inventory in inventorys:
+	for inventory in self.db[inventory_collection].find({ "sys_store_id": store_id }):
 		self.dict_writer.writerow(inventory)
 
 class InventoryExcel:

@@ -94,7 +94,7 @@ def get_wine_info(wine_number, category):
 		resp = urllib2.urlopen(req).read()
 		parse_wine_info(resp, wine_number, category)
 
-def parse_wine_info(resp, wine_number, category):
+def parse_wine_info(resp, wine_number, wine_category):
 
 	data = json.loads(resp)
 
@@ -144,16 +144,22 @@ def parse_wine_info(resp, wine_number, category):
 
 			inventory_collection = "inventory_" + wine_category
 
-			db[inventory_collection].update({ "wine_number": wine_number }, \
-											{ "$set": { "sales_start": sales_start, \
-														"alcohol": alcohol, \
-														"color": color, \
-														"fragrance": fragrance, \
-														"ingredient": ingredient, \
-														"sugar": sugar, \
-														"producer": producer, \
-														"supplier": supplier, \
-														}}, False, True)
+			db[inventory_collection].update_many(
+				{ "wine_number": wine_number }, 
+				{ "$set": { "sales_start": sales_start, \
+							"alcohol": alcohol, \
+							"color": color, \
+							"fragrance": fragrance, \
+							"ingredient": ingredient, \
+							"sugar": sugar, \
+							"producer": producer, \
+							"supplier": supplier, \
+							}})
+
+			inventory = db[inventory_collection].find_one({ "alcohol": {"$exists": False} })
+			if inventory != None:
+				print inventory['wine_number']
+				get_wine_info(inventory['wine_number'], wine_category)
 
 def get_date_from_timestamp(time_stamp_info):
 	
@@ -167,20 +173,15 @@ def get_date_from_timestamp(time_stamp_info):
 	return time.strftime("%Y-%m-%d", time.gmtime(time_stamp + 7200))
 
 def update_wine():
-	wine_category_dict = { "red_wine": u'Rött vin', "white_wine": u'Vitt vin' }
 
 	for wine_category in wine_category_dict.keys():
 
 		inventory_collection = "inventory_" + wine_category
 
-		wine_numbers = []
-		for wine_number in db[inventory_collection].distinct('wine_number'):
-			wine_numbers.append(wine_number)
+		inventory = db[inventory_collection].find_one({ "alcohol": {"$exists": False} })
+		if inventory != None:
+			get_wine_info(inventory['wine_number'], wine_category)
 
-		for wine_number in wine_numbers:
-			inventory = db[inventory_collection].find_one({ "wine_number": wine_number, "alcohol": {"$exists": False} })
-			if inventory != None:
-				get_wine_info(inventory['wine_number'], wine_category)
 
 if __name__ == '__main__':
 
