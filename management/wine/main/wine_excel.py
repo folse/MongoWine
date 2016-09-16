@@ -38,7 +38,7 @@ class WineExcel:
 		csv_file.write(codecs.BOM_UTF8)
 		writer = csv.writer(csv_file)
 
-		field_names = ['Product Name', 'Product Id', 'Säljstart', 'Alkoholhalt', 'Färg', 'Doft', 'Råvaror', 'Sockerhalt', 'Producent', 'Leverantör']
+		field_names = ['wine_name', 'wine_number', 'Säljstart', 'Alkoholhalt', 'Färg', 'Doft', 'Råvaror', 'Sockerhalt', 'Producent', 'Leverantör']
 		dict_writer = csv.DictWriter(csv_file, fieldnames=field_names)
 
 		db = MongoClient().wine
@@ -58,13 +58,53 @@ class WineExcel:
 			writer.writerow([store_info])
 			dict_writer.writeheader()
 
+			sales_start = ''
+			alcohol = ''
+			color = ''
+			fragrance = ''
+			ingredient = ''
+			sugar = ''
+			producer = ''
+			supplier = ''
+
 			inventory_collection = "inventory_" + category
 			inventories = db[inventory_collection].find({ "sys_store_id": store_id })
 			for inventory in inventories:
-				
-				wine_id = inventory['wine_id']
-				wine = db.wine.find_one({ "_id": ObjectId(str(wine_id)) })
-				dict_writer.writerow({'Product Name': wine['name'], 'Product Id': wine['sys_wine_id'], 'Säljstart': wine['sales_start'], 'Alkoholhalt': wine['alcohol'], 'Färg': wine['color'], 'Doft': wine['fragrance'], 'Råvaror': wine['ingredient'], 'Sockerhalt': wine['sugar'], 'Producent': wine['producer'], 'Leverantör': wine['supplier']})
+
+				if inventory.has_key('sales_start'):
+					sales_start = inventory['sales_start']
+
+				if inventory.has_key('alcohol'):
+					alcohol = inventory['alcohol']
+
+				if inventory.has_key('color'):
+					color = inventory['color']
+
+				if inventory.has_key('fragrance'):
+					fragrance = inventory['fragrance']
+
+				if inventory.has_key('ingredient'):
+					ingredient = inventory['ingredient']
+
+				if inventory.has_key('sugar'):
+					sugar = inventory['sugar']
+
+				if inventory.has_key('producer'):
+					producer = inventory['producer']
+
+				if inventory.has_key('supplier'):
+					supplier = inventory['supplier']
+
+				dict_writer.writerow({ 'wine_name': inventory['wine_name'], \
+									'wine_number': inventory['wine_number'], \
+									'Säljstart': sales_start, \
+									'Alkoholhalt': alcohol, \
+									'Färg': color, \
+									'Doft': fragrance, \
+									'Råvaror': ingredient, \
+									'Sockerhalt': sugar, \
+									'Producent': producer, \
+									'Leverantör': supplier })
 
 			writer.writerow([' '])
 			writer.writerow([' '])

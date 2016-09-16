@@ -23,14 +23,6 @@ class UserAdmin(ModelView):
     column_searchable_list = ['username', 'email']
     column_exclude_list = ['password']
 
-class WineAdmin(ModelView):
-    list_template = 'admin/list.html'
-    can_create = False
-    can_delete = False
-    can_edit = False
-    column_searchable_list = ['name', 'number']
-    column_exclude_list = ['sys_wine_id', 'url', 'fragrance', 'color', 'sugar', 'ingredient', 'created_at', 'updated_at']
-
 class StoreAdmin(ModelView):
     can_create = False
     can_delete = False
@@ -39,5 +31,4 @@ class StoreAdmin(ModelView):
     column_exclude_list = ['created_at', 'updated_at']
 
 admin.add_view(UserAdmin(User))
-admin.add_view(WineAdmin(Wine))
 admin.add_view(StoreAdmin(Store))

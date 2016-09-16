@@ -101,21 +101,6 @@ class User(db.Document):
 def load_user(user_id):
     return User.objects(id=user_id).first()
 
-class Wine(db.Document):
-    name = StringField(max_length=256)
-    sales_start = StringField(max_length=256)
-    alcohol = StringField(max_length=64)
-    color = StringField(max_length=256)
-    fragrance = StringField(max_length=256)
-    ingredient = StringField(max_length=256)
-    sugar = StringField(max_length=256)
-    producer = StringField(max_length=256)
-    supplier = StringField(max_length=256)
-    number = StringField(max_length=64)
-    category = StringField(max_length=64)
-    created_at = DateTimeField(default=datetime.utcnow)
-    updated_at = DateTimeField(default=datetime.utcnow)
-
 class Store(db.Document):
     name = StringField(max_length=256)
     city = StringField(max_length=256)

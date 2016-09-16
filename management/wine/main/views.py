@@ -4,7 +4,7 @@ from flask import render_template, redirect, url_for, abort, flash, request,\
 from flask_login import login_required, current_user
 from . import main
 from .. import db
-from ..models import User, Wine
+from ..models import User
 from wine_excel import WineExcel
 from inventory_excel import InventoryExcel
 

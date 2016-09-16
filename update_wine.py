@@ -19,6 +19,13 @@ sys.setrecursionlimit(1000000)
 #然后在各个 category 的 inventory 表中根据 wine_number 去重后，
 #得到全部的 wine_number 列表。然后将每个相同 wine_number 的 inventory 中的 wine 信息更新即可。
 
+# backup:
+
+	# if wine_info.has_key('NamnFet'):
+	# 	wine_name = wine_info['NamnFet']
+	# 	if wine_info.has_key('NamnMager'):
+	# 		wine_name = wine_name + ' ' + wine_info['NamnMager']
+
 
 def get_wine_info(wine_number, category):
 	url = 'https://api.systembolaget.se/V4/artikel/' + wine_number
@@ -99,16 +106,16 @@ def parse_wine_info(resp, wine_number, category):
 
 			inventory_collection = "inventory_" + wine_category
 
-			db[inventory_collection].update({ "wine_number": wine_number },\
-			 			   { "$set": { "sales_start": sales_start, \
-			 	            		   "alcohol": alcohol, \
-			 						   "color": color, \
-			 						   "fragrance": fragrance, \
-			 						   "ingredient": ingredient, \
-			 						   "sugar": sugar, \
-			 						   "producer": producer, \
-			 						   "supplier": supplier, \
-			 						  }}, False, False)
+			db[inventory_collection].update({ "wine_number": wine_number }, \
+											{ "$set": { "sales_start": sales_start, \
+														"alcohol": alcohol, \
+														"color": color, \
+														"fragrance": fragrance, \
+														"ingredient": ingredient, \
+														"sugar": sugar, \
+														"producer": producer, \
+														"supplier": supplier, \
+														}}, False, False)
 
 def get_date_from_timestamp(time_stamp_info):
 	

@@ -49,11 +49,14 @@ def save_wine_info(product, sys_store_id, wine_category):
     
     wine_number = product['ProductNumber']
     wine_inventory = int(product['QuantityText'][:-3])
+    wine_name = str(product['ProductNameBold']).encode("utf-8")
+    if product['ProductNameThin'] != None:
+    	wine_name = wine_name + ' ' + str(product['ProductNameThin']).encode("utf-8")
 
     inventory_collection = "inventory_" + wine_category
 
     db[inventory_collection].update({ "wine_number": wine_number, "sys_store_id": sys_store_id },\
-	 			   { "$set": { update_time_period: wine_inventory }}, True, True)
+	 			   { "$set": { "wine_name": wine_name, update_time_period: wine_inventory }}, True, True)
 
 def get_update_time_period():
 
