@@ -6,6 +6,7 @@ import time
 import datetime
 import urllib
 import urllib2
+import pymongo
 from pymongo import MongoClient
 
 import sys  
@@ -187,10 +188,12 @@ if __name__ == '__main__':
 
 	global db
 	global resp
+	global log_file
 	global update_time_period
 	global wine_category_dict
 
 	db = MongoClient().wine
+	log_file = file("get_wine.log","w")
 	update_time_period = get_update_time_period()
 	wine_category_dict = { "red_wine": u'Rött vin', "white_wine": u'Vitt vin' }
 
@@ -199,8 +202,14 @@ if __name__ == '__main__':
 	for store in db.store.find():
 		sys_store_ids.append(store['sys_store_id'])
 
-	for sys_store_id in sys_store_ids:
-		for wine_category in wine_category_dict.keys():
+	for wine_category in wine_category_dict.keys():
+		for sys_store_id in sys_store_ids:
 			get_store_wine(wine_category, sys_store_id, 0)
+
+		#数据库第一次存入数据后需要建一下索引，不是每次运行到这都需要
+		inventory_collection = "inventory_" + wine_category
+		db[inventory_collection].create_index([("wine_number", pymongo.ASCENDING)])
+		db[inventory_collection].create_index([("sys_store_id", pymongo.ASCENDING)])
+		db[inventory_collection].create_index([("wine_number", pymongo.ASCENDING), ("sys_store_id", pymongo.ASCENDING)])
 
 	update_wine()

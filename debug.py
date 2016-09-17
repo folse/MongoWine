@@ -5,6 +5,7 @@ import json
 import time
 import datetime
 import urllib2
+import pymongo
 from pymongo import MongoClient
 
 import sys
@@ -17,6 +18,13 @@ if __name__ == '__main__':
         global db
         db = MongoClient().wine
 
+        #索引 -----
+
+        # db.store.create_index([("city", pymongo.ASCENDING)])
+        # db.store.drop_index("city_1") #参数为数据库中保存这个索引的 name
+
+        #-----
+
         wine_category_dict = { "red_wine": u'Rött vin', "white_wine": u'Vitt vin' }
 
         for wine_category in wine_category_dict.keys():
@@ -27,9 +35,9 @@ if __name__ == '__main__':
                 #批量更新 -----
 
                 result = db[inventory_collection].update_many(
-                    {"2016-09-17 01:00": {"$exists": True}},
+                    {"2016-09-17 14:00": {"$exists": True}},
                     {
-                        "$unset": {"2016-09-17 01:00": True}
+                        "$unset": {"2016-09-17 14:00": True}
                     }
                 )
 
