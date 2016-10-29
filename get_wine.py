@@ -195,7 +195,7 @@ if __name__ == '__main__':
 	db = MongoClient().wine
 	log_file = file("get_wine.log","w")
 	update_time_period = get_update_time_period()
-	wine_category_dict = { "red_wine": u'Rött vin', "white_wine": u'Vitt vin' }
+	wine_category_dict = { "red_wine": u'Rött vin', "white_wine": u'Vitt vin', "beer": u'Öl', "whisky": u'Whisky' }
 
 	sys_store_ids = []
 
